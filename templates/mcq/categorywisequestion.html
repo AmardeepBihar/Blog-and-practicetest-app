@@ -1,0 +1,45 @@
+{% extends 'header&footer/base.html' %}
+{% block content %}
+<head>
+  <title>Category wise Questions</title>
+</head>
+<!-- start card of the blogs -->
+<h3 class="ms-5 my-4"><strong>Category: {{ category.name }}</strong></h3>
+
+{% if pages %}
+  <div class="row mx-3">
+    {% for mcq in pages %}
+    <div class="col-sm-3 mb-4">
+      <a href="{% url 'ansthequestion' mcq.uid %}" class="text-decoration-none">
+        <div class="card">
+          <div class="card-body">
+            <p class="card-text">{{ mcq.question }}</p>
+            <h5 class="card-title" style="font-size: 10px;"><b>Category: {{ mcq.catogery }}</b></h5>
+            <button class="btn btn-success">Answer the question</button>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+<hr>
+  <h5 class="mx-5 my-4" style="font-size: 15px;">There are no questions available now.</h5>
+{% endif %}
+<!-- end the cord of the blog -->
+<!-- paginator used here  -->
+<div class="text-center">
+  {% if pages.has_previous %}
+  <!-- <a href="?page=1" class="text-decoration-none">First Page</a> | -->
+  <a href="?page={{pages.previous_page_number}}" class="text-decoration-none">
+    << </a>
+      {% endif %}
+      | {{pages.number}} of {{pages.paginator.num_pages}} Pages |
+      {% if pages.has_next %}
+      <!-- <a href="?page={{pages.paginator.num_pages}}" class="text-decoration-none"> Last Page </a> | -->
+      <a href="?page={{pages.next_page_number}}" class="text-decoration-none">>></a>
+      {% endif %}
+  </a>
+</div>
+<!-- paginator end here -->
+{% endblock %}

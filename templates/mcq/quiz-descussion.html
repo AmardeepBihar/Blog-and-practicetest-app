@@ -1,0 +1,113 @@
+{% extends 'header&footer/base.html' %}
+
+{% block content %}
+<head>
+    <title>{{ ans.question }}</title>
+    <style>
+        .custom-radio { border: 2px solid black; }
+        .custom-radio:checked { border-color: #28a745 !important; }
+        .custom-radio:checked:before { background-color: #28a745 !important; }
+    </style>
+</head>
+
+<div class="row my-4 mx-4">
+    <div class="col-md-8 mb-3">
+        <div class="card" style="border: 1px solid black;">
+            <div class="card-body mx-3 my-3">
+                <p style="font-size: 17px;" class="card-title">{{ ans.question }}</p>
+                <p style="font-size: 15px;"><strong>Category:</strong> {{ ans.catogery }}</p>
+                
+                <!-- Options Section -->
+                <form id="quizForm">
+                    {% for option in options %}
+                        <div class="form-check">
+                            <input class="form-check-input custom-radio" type="radio" name="mcq_option" id="option{{ forloop.counter }}" data-answer="{{ forloop.counter0 }}" value="{{ option }}" />
+                            <label class="form-check-label" for="option{{ forloop.counter }}">
+                                {% if forloop.counter == 1 %}A{% elif forloop.counter == 2 %}B{% elif forloop.counter == 3 %}C{% elif forloop.counter == 4 %}D{% endif %} 
+                                . {{ option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </form>
+
+                <div id="answer-container" class="mt-4" style="display: none;">
+                    <div id="answer-message" class="alert alert-info">
+                        <span id="correct-answer"></span>
+                    </div>
+                    <div id="explanation-message" style="margin-top: 10px;">
+                        <strong>Explanation : </strong>{{ ans.explanation|safe }}
+                    </div>
+                </div>
+
+                <button type="button" id="submitBtn" class="btn btn-success form-control mt-3">Submit</button>
+                <button type="button" id="nextBtn" class="btn btn-success form-control mt-3" style="display:none;">Next</button>
+                <a href="{% url 'endpractice' %}" class="btn btn-danger form-control mt-3" style="display:none;" id="endPracticeBtn">End Practice</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <h5 class="mb-3 text-center">Other Questions</h5>
+        <ul class="list-group">
+            {% for question in random_question %}
+                <li class="list-group-item mt-1" style="border: 1px solid black;">
+                    <a href="{% url 'ansthequestion' question.uid %}" class="text-decoration-none">{{ question.question|truncatewords:10 }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.getElementById("submitBtn").addEventListener("click", function() {
+        var selectedOption = document.querySelector('input[name="mcq_option"]:checked');
+        if (selectedOption) {
+            var selectedAnswer = selectedOption.value;
+            var correctAnswer = "{{ ans.correct_ans }}";
+            var answerContainer = document.getElementById("answer-container");
+            var answerMessage = document.getElementById("answer-message");
+            var correctAnswerLabel = document.getElementById("correct-answer");
+            var explanationMessage = document.getElementById("explanation-message");
+
+            answerContainer.style.display = 'block';
+
+            if (selectedAnswer === correctAnswer) {
+                correctAnswerLabel.innerHTML = 'Correct!';
+                answerMessage.classList.remove('alert-info', 'alert-danger');
+                answerMessage.classList.add('alert-success');
+                answerMessage.style.backgroundColor = '#4acf85';
+                answerMessage.style.color = 'black';
+            } else {
+                correctAnswerLabel.innerHTML = "Incorrect! The correct answer is: " + correctAnswer;
+                answerMessage.classList.remove('alert-info', 'alert-success');
+                answerMessage.classList.add('alert-danger');
+                answerMessage.style.backgroundColor = '#dc3545';
+                answerMessage.style.color = 'white';
+            }
+
+            // Update session results
+            fetch("{% url 'update_session_results' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    selected_answer: selectedAnswer,
+                    correct_answer: correctAnswer
+                })
+            });
+
+            document.getElementById("submitBtn").style.display = 'none';
+            document.getElementById("nextBtn").style.display = 'block';
+            document.getElementById("endPracticeBtn").style.display = 'block';
+        } else {
+            alert("Please select an answer before submitting.");
+        }
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", function() {
+        window.location.href = "{% url 'ansthequestion' next_question.uid %}";
+    });
+</script>
+
+{% endblock %}

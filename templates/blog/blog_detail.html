@@ -1,0 +1,77 @@
+{% extends 'header&footer/base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <title>{{obj.title}}</title>
+</head>
+<body style="border-radius: 4px;">
+    <div class="container blog-detail" style="text-align: justify;">
+        <div class="row">
+            <!-- Main Blog Content (3/4 width) -->
+            <div class="col-md-9 blog-content">
+                <h3 class="text-dark">{{ obj.title }}</h3>
+                <p><strong>Author :</strong> {{ obj.author.first_name }} {{ obj.author.last_name }} |
+                    <strong>Published on:</strong> January 6, 2025 | <strong>Category:</strong> {{ obj.category }}
+                </p>
+                <hr style="border: 2px solid black;" />
+                <img src="{{ obj.detail_image.url }}" style="border: black 2px solid; margin-bottom: 20px;" 
+                     class="img-fluid rounded" alt="{{ obj.title }}" width='100%'>
+            
+                <div>
+                    <p>{{ obj.description|safe }}</p>
+                </div>
+            
+                {% if obj.pdf_file %}
+                <div class="pdf-embed-container">
+                    <h4>PDF View:</h4>
+                    <!-- Embed the PDF without the toolbar, preventing download/print options -->
+                    <iframe src="{{obj.pdf_file.url}}" width="100%" height="900" style="border: none;"></iframe>
+                </div>
+            {% endif %}
+            
+            </div>
+            
+            <!-- Sidebar with Blog Suggestions (1/4 width) -->
+            <div class="col-md-3 blog-sidebar">
+                <h4 class="sidebar-heading ms-4" style="margin-top:50px;">Recent Blogs</h4>
+                <hr style="border: 2px solid black;" class="ms-4 me-4" />
+                <ul class="blog-suggestions-list">
+                    {% for object in obje %}
+                    <div class="card-body">
+                        <p class="card-title text-success me-4">
+                            <a href="{% url 'post_detail' object.slug %}"><strong>{{ object.title }}</strong></a>
+                        </p>
+                        <p class="card-text me-4 mt-2" style=" font-size: 13px;">
+                            {{ object.description|safe|truncatewords:15 }}
+                        </p>
+                        <p style=" font-size: 13px;">Published : {{object.published_date|timesince}} ago</p>
+                    </div>
+                    <hr style="border: 2px solid black;" class="me-4" />
+                    {% endfor %}
+                </ul>
+                <h4 class="sidebar-heading ms-4">Popular Blogs</h4>
+                <hr style="border: 2px solid black;" class="me-4 ms-4" />
+                <ul class="blog-suggestions-list">
+                    {% for object in random_blogs %}
+                    <div class="card-body">
+                        <p class="card-title text-success me-4">
+                            <a href="{% url 'post_detail' object.slug %}"><strong>{{ object.title }}</strong></a>
+                        </p>
+                        <p class="card-text me-4 mt-2" style=" font-size: 13px;">
+                            {{ object.description|safe|truncatewords:15 }}
+                        </p>
+                        <p style=" font-size: 13px;">Published : {{object.published_date|timesince}} ago</p>
+                    </div>
+                    <hr style="border: 2px solid black;" class="me-4" />
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center" style="font-weight: 600; margin-right: 330px;">
+        <a href="{% url 'home' %}" class="text-decoration-none btn btn-success form-control">Back
+            to Home</a>
+    </p>
+</body>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'header&footer/base.html' %}
+{% block content %}
+
+<head>
+    <title>Result-of-the-session</title>
+    <style>
+        .watermark {
+            font-size: 30px;
+            color: rgb(214, 210, 210);
+        }
+    </style>
+</head>
+
+<body>
+   <!-- Print Button, aligned to the right -->
+    <button id="printBtn" class="btn btn-success mt-3 me-3" style="float: right;">Print Score</button>
+
+    <!-- start result tab -->
+    <div class="bg-light" style="margin: 30px 300px 30px 300px" id="resultTab">
+        <div class="watermark">Ram's Blog</div>
+        <h3 class="text-center pt-4">Your Result Results</h3>
+
+        <!-- Display total questions attempted -->
+        <div style="margin-left: 100px; margin-right: 100px;">
+            <hr style="border: 2px solid black;">
+            <div class="text-center">
+                <p><strong>Total Questions Attempted:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ attempted }}</p>
+            </div>
+
+            <!-- Display the number of correct answers -->
+            <div class="mb-3 text-center">
+                <p><strong>Correct Answers:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ correct }}</p>
+            </div>
+
+            <!-- Display the number of incorrect answers -->
+            <div class="mb-3 text-center">
+                <p><strong>Incorrect Answers:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ incorrect }}</p>
+            </div>
+
+            <!-- Display score as percentage -->
+            <div class="mb-3 ms-3 text-center">
+                <p><strong>Score:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {{ percentage }}%</p>
+            </div>
+
+            <!-- Provide a button to start a new practice session -->
+            <div class="mt-4 text-center">
+                <a href="{% url 'ansthequestion' next_question.uid %}" class="mb-4 form-control p-2 btn btn-success">Start New Practice</a>
+            </div>
+        </div>
+        <div class="watermark text-end">Ram's Blog</div>
+    </div>
+
+    <!-- Add JavaScript for Printing -->
+    <script>
+        document.getElementById('printBtn').addEventListener('click', function () {
+            const printWindow = window.open('', '', 'height=600,width=800'); // Open a new window
+            const resultTabContent = document.getElementById('resultTab').innerHTML; // Get the content of the result tab
+            
+            // Add a style to format the print content
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 30px; color: rgb(214, 210, 210); }
+                            h3 { text-align: center; }
+                        </style>
+                    </head>
+                    <body>
+                        ${resultTabContent}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close(); // Close the document for printing
+            printWindow.print(); // Trigger the print dialog
+        });
+    </script>
+</body>
+{% endblock %}
